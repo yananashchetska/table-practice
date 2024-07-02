@@ -434,10 +434,33 @@ module.exports = [{
 },{}],"scripts/main.js":[function(require,module,exports) {
 'use strict';
 
+/**
+ * 
+ * @param {HTMLTableElement} table The table to sort
+ * @param {number} column The index of the column to sort
+ * @param {boolean} asc Determines if the sorting will be in ascending
+ * 
+ */
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 var people = require('./lib/people.json');
 var table = document.querySelector('.dashboard');
 
-// eslint-disable-next-line no-console
+//1. change the body and header
+var tableHeaderContent = table.childNodes[1].innerHTML;
+var tableHeader = document.createElement('THEAD');
+tableHeader.innerHTML = tableHeaderContent;
+table.removeChild(table.childNodes[1]);
+table.appendChild(tableHeader);
+var tableBody = document.createElement('TBODY');
+table.appendChild(tableBody);
+
+// 1 done
+
 // option 1:
 
 // const insertRows = (peopleArray) => {
@@ -467,10 +490,10 @@ var table = document.querySelector('.dashboard');
 
 var insertRows = function insertRows(peopleArray) {
   peopleArray.forEach(function (person) {
+    var row = document.createElement('tr');
     var gender = person.sex === 'm' ? 'male' : 'female';
     var age = person.died - person.born;
     var century = Math.ceil(person.died / 100);
-    var row = document.createElement('tr');
     var nameCell = document.createElement('td');
     var genderCell = document.createElement('td');
     var bornCell = document.createElement('td');
@@ -484,10 +507,34 @@ var insertRows = function insertRows(peopleArray) {
     ageCell.textContent = age;
     centuryCell.textContent = century;
     row.append(nameCell, genderCell, bornCell, diedCell, ageCell, centuryCell);
-    table.appendChild(row);
+    tableBody.appendChild(row);
   });
 };
 insertRows(people);
+var sortTableByColumn = function sortTableByColumn(column) {
+  var asc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  var dirModifier = asc ? 1 : -1;
+  var rows = _toConsumableArray(tableBody.querySelectorAll('tr'));
+  rows.sort(function (a, b) {
+    var aColumnText = a.children[column].textContent.trim();
+    var bColumnText = b.children[column].textContent.trim();
+    return aColumnText > bColumnText ? 1 * dirModifier : -1 * dirModifier;
+  });
+  return rows;
+};
+var index = 0;
+var asc = false;
+tableHeader.addEventListener('click', function (ev) {
+  asc = !asc;
+  index = Array.prototype.indexOf.call(_toConsumableArray(ev.target.parentElement.children), ev.target);
+  var sorted = sortTableByColumn(index, asc);
+  ev.target.classList.toggle('asc', asc);
+  ev.target.classList.toggle('desc', !asc);
+  tableBody.innerHTML = '';
+  sorted.forEach(function (row) {
+    tableBody.appendChild(row);
+  });
+});
 },{"./lib/people.json":"scripts/lib/people.json"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -513,7 +560,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55030" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58370" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
